@@ -1,12 +1,12 @@
 # mbp-ubuntu
 
-The ISO in from this repo should allow you to install ubuntu without using an external keyboard or mouse on a MacBook Pro. It work in my MacBook with T2.
+The ISO in from this repo should allow you to install ubuntu without using an external keyboard or mouse on a MacBook Pro with a T2 chip.
 
 [![CI](https://github.com/marcosfad/mbp-ubuntu/actions/workflows/CI.yml/badge.svg)](https://github.com/marcosfad/mbp-ubuntu/actions/workflows/CI.yml)
 
 **If this repo helped you in any way, consider inviting a coffee to the people in the [credits](https://github.com/marcosfad/mbp-ubuntu#credits) or [me](https://paypal.me/marcosfad).**
 
-UBUNTU 20.04 ISO with Apple T2 patches built-in.
+## UBUNTU 20.04 ISO with Apple T2 patches built-in.
 
 Apple T2 drivers are integrated with this iso. 
 
@@ -18,19 +18,22 @@ Using additional drivers:
 - [Apple T2 (apple-bce) (audio, keyboard, touchpad)](https://github.com/t2linux/apple-bce-drv)
 - [Touchbar (apple-ibridge, apple-ib-tb, apple-ib-als)](https://github.com/t2linux/apple-ib-drv)
 
-Bootloader is configure correctly out of the box. No workaround needed.
+Bootloader is configured correctly out of the box, no workaround is needed.
 
 ## Before I begin, what version should I use? "mbp" or "mbp-16x-wifi"?
 
-The difference between the two is that the mbp-16x-wifi version includes a different version of the brcmfmac wifi driver, made by corellium for M1 macs. This version of the wifi driver works on some models that the brcmfmac driver included with the mbp version doesn't support. Refer to the table on [this page](https://wiki.t2linux.org/guides/wifi/) to figure out which versions will work (Look at the "Firmware Options" column, Mojave means you can use the "mbp" version, and Big Sur means you can use the "mbp-16x-wifi" version).
+The difference between the two is that the `mbp-16x-wifi` version includes a different version of the `brcmfmac` wifi driver made by corellium for M1 macs. This version of the wifi driver works on some models where the `brcmfmac` driver included with the mbp version isn't supported. Refer to the table on [this page](https://wiki.t2linux.org/guides/wifi/) to figure out which versions will work. Look at the "Firmware Options" column:
 
-**!! Please note that as of the v20.04-5.10.52 release, the mbp-16x-wifi iso does not support wifi on models with the BCM4377 chipset. For now, you can install a kernel from [here](https://github.com/AdityaGarg8/mbp-16.x-ubuntu-kernel/releases/tag/v5.13.12-1) after installing ubuntu if you have the BCM4377 chipset.**
+* Mojave means you can use the `mbp` version
+* Big Sur means you can use the `mbp-16x-wifi` version.
+
+**!! Please note that as of the `v20.04-5.10.52` release, the `mbp-16x-wifi` iso does not support wifi on models with the `BCM4377` chipset. For now, you can install a kernel from [here](https://github.com/AdityaGarg8/mbp-16.x-ubuntu-kernel/releases/tag/v5.13.12-1) after installing ubuntu if you have the `BCM4377` chipset.**
 
 ## Installation
 
 1. Reduce the size of the mac partition in MacOS
 2. Download ISO file from releases. (Use the command line to unzip (`unzip /path/to/file.zip`) or "The Unarchiver" app)
-3. Copy it to a USB using dd (or gdd if installed over brew): 
+3. Copy it to a USB using `dd` (or `gdd` if installed over `brew`): 
 ```bash
 diskutil list # found which number has the USB
 diskutil umountDisk /dev/diskX
@@ -54,16 +57,26 @@ sudo dd bs=4096 if=ubuntu-20.04-5.6.10-mbp.iso of=/dev/diskX
 ## Configuration
 
 - See <https://wiki.t2linux.org/guides/wifi/>
-- To install additional languages, install appropriate langpack via apt `sudo apt-get install language-pack-[cod] language-pack-gnome-[cod] language-pack-[cod]-base language-pack-gnome-[cod]-base `
-    - see https://askubuntu.com/questions/149876/how-can-i-install-one-language-by-command-line
+- To install additional languages, install appropriate langpack via apt:
+```bash
+sudo apt-get install -y \
+   language-pack-[cod] \
+   language-pack-gnome-[cod] \
+   language-pack-[cod]-base \
+   language-pack-gnome-[cod]-base
+```
+- see <https://askubuntu.com/questions/149876/how-can-i-install-one-language-by-command-line>
 - You can change mappings of ctrl, fn, option keys (PC keyboard mappings) by creating `/etc/modprobe.d/hid_apple.conf` file and recreating grub config. All available modifications could be found here: <https://github.com/free5lot/hid-apple-patched>
 ```
 # /etc/modprobe.d/hid_apple.conf
 options hid_apple swap_fn_leftctrl=1
 options hid_apple swap_opt_cmd=1
 ```
-- I switch the touchbar to show f* by default. If you like another configuration, change /etc/modprobe.d/apple-tb.conf or remove it.
-- To update grub, run: `grub-mkconfig -o /boot/grub/grub.cfg`
+- I switch the touchbar to show `F*` (F1, F2, F3, etc.) by default. If you like another configuration, change `/etc/modprobe.d/apple-tb.conf` or remove it.
+- To update grub, run: 
+```bash
+grub-mkconfig -o /boot/grub/grub.cfg
+```
 
 ## MISC
 
@@ -75,7 +88,9 @@ GRUB_TIMEOUT_STYLE=menu
 GRUB_TIMEOUT=10
 ```
 and then:
-`sudo update-grub`
+```bash
+sudo update-grub
+```
 
 ## Update to newer kernels
 
@@ -85,7 +100,7 @@ and then:
 
 The live cd includes dkms and will automatically run when a new kernel is installed. You can use `dkms status` to see it.
 
-If you are upgrading from 5.7.19 to a newer kernel version (5.10+), you will need updated versions of these kernel modules. Instructions for installing updated ones are [here](https://wiki.t2linux.org/guides/dkms/).
+If you are upgrading from `5.7.19` to a newer kernel version (`5.10+`), you will need updated versions of these kernel modules. Instructions for installing updated ones are [here](https://wiki.t2linux.org/guides/dkms/).
 
 ### Another way:
 
@@ -101,19 +116,20 @@ On MBP 16,1, you might also need to disable realtime scheduling if the above gis
 ## Not working (Following the mikeeq/mbp-fedora)
 
 - Dynamic audio input/output change (on connecting/disconnecting headphones jack)
-- TouchID - (@MCMrARM is working on it - https://github.com/Dunedan/mbp-2016-linux/issues/71#issuecomment-528545490)
+- TouchID - (@MCMrARM is working on it - <https://github.com/Dunedan/mbp-2016-linux/issues/71#issuecomment-528545490>)
 - Thunderbolt (is disabled, because driver was causing kernel panics (not tested with 5.5 kernel))
 - Microphone (it's recognised with new apple t2 sound driver, but there is a low mic volume amp)
 
 ## TODO
 
-- ISO is using gzip initramfs. It would be great to change it lz4
+- ISO is using `gzip` initramfs. It would be great to change it `lz4`
 - Optimize the software installed.
 
 ## Known issues (Following the mikeeq/mbp-fedora)
 
 - Kernel/Mac related issues are mentioned in kernel repo
 - `ctrl+x` is not working in GRUB, so if you are trying to change kernel parameters - start your OS by clicking `ctrl+shift+f10` on external keyboard
+- Additional issues here: <https://github.com/marcosfad/mbp-ubuntu/issues>
 
 ## Docs
 
